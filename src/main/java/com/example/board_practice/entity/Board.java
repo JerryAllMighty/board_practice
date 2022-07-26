@@ -14,7 +14,7 @@ import javax.persistence.Id;
 public class Board {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     private String title;
 

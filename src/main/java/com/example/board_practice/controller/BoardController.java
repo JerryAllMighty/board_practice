@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -41,7 +42,9 @@ public class BoardController {
     }
 
     @GetMapping("/board/view")
-    public String boardView() {
+    public String boardView(Model model, Long id) {
+
+        model.addAttribute("board", boardService.boardView(id));
         return "boardview";
     }
 
