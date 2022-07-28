@@ -5,10 +5,8 @@ import com.example.board_practice.service.BoardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -25,12 +23,18 @@ public class BoardController {
     }
 
     @PostMapping("/board/writepro") //localhost:8080/board/write
-    public String boardWritePro(Board board) {
-        System.out.println("제목" + board.getTitle());
-        System.out.println("내용" + board.getContent());
+    public String boardWritePro(MultipartFile file, Board board, Model model) throws Exception {
 
-        boardService.write(board);
-        return "";
+        boardService.write(board, file);
+
+        model.addAttribute("message", "글 작성이 완료되었습니다.");
+
+        // 예외처리 패키지에서 해당 에러를 throw한다면 해당 메세지를 넘겨주게 설정해도 된다. 지금은 하지 않껬다.
+        //    model.addAttribute("message", "글 작성이 실패되었습니다.");
+
+
+        model.addAttribute("searchUrl", "/board/list");
+        return "message";
     }
 
 
@@ -46,6 +50,33 @@ public class BoardController {
 
         model.addAttribute("board", boardService.boardView(id));
         return "boardview";
+    }
+
+    @GetMapping("/board/delete")
+    public String boardDelete(Long id) {
+        System.out.println(id);
+        boardService.boardDelete(id);
+        return "redirect:/board/list";
+    }
+
+    @GetMapping("/board/modify/{id}")
+    public String boardModify(@PathVariable Long id, Model model) {
+        System.out.println(id);
+        model.addAttribute("board", boardService.boardView(id));
+
+        return "boardModify";
+    }
+
+    @PostMapping("/board/update/{id}")
+    public String boardUpdate(@PathVariable Long id, Board board, Model model, MultipartFile file) throws Exception {
+        System.out.println(id);
+        Board boardTemp = boardService.boardView(id);
+        boardTemp.setTitle(board.getTitle());
+        boardTemp.setContent(board.getContent());
+        boardService.write(boardTemp, file);
+        model.addAttribute("message", "글 수정이 완료되었습니다.");
+        model.addAttribute("searchUrl", "/board/list");
+        return "message";
     }
 
 }
