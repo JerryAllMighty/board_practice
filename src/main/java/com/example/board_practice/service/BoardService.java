@@ -3,6 +3,8 @@ package com.example.board_practice.service;
 import com.example.board_practice.entity.Board;
 import com.example.board_practice.repository.BoardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,24 +26,29 @@ public class BoardService {
         File saveFile = new File(projectPath, fileName);
         file.transferTo(saveFile);
         board.setFilename(fileName);
-        board.setFilepath("/files/" +fileName);
+        board.setFilepath("/files/" + fileName);
 
         boardRepository.save(board);
     }
 
-    public List<Board> boardList(){
-        return boardRepository.findAll();
+    public Page<Board> boardList(Pageable pageable) {
+        return boardRepository.findAll(pageable);
 
     }
 
+    public Page<Board> boardSearchList(String seachKeyword, Pageable pageable) {
+        return boardRepository.findByTitleContaining(seachKeyword, pageable);
+    }
 
-    public Board boardView(Long boardId){
-        return boardRepository.findById( boardId).get();
+
+    public Board boardView(Long boardId) {
+        return boardRepository.findById(boardId).get();
 
     }
 
-    public void boardDelete(Long id){
-        boardRepository.deleteById(id);;
+    public void boardDelete(Long id) {
+        boardRepository.deleteById(id);
+        ;
 
 
     }
